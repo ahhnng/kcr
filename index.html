@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management Interface</title>
+    <script>
+        let data = [];
+
+        function addEntry() {
+            const name = document.getElementById('name').value;
+            const studentId = document.getElementById('student-id').value;
+            const phone = document.getElementById('phone').value;
+
+            data.push({name, studentId, phone});
+            document.getElementById('data-table').innerHTML += `<tr><td>${name}</td><td>${studentId}</td><td>${phone}</td></tr>`;
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('student-id').value = '';
+            document.getElementById('phone').value = '';
+        }
+
+        function searchEntries() {
+            const searchText = document.getElementById('search').value.toLowerCase();
+            const filteredData = data.filter(entry => entry.name.toLowerCase().includes(searchText) || entry.studentId.includes(searchText));
+            displayEntries(filteredData);
+        }
+
+        function displayEntries(entries) {
+            const table = document.getElementById('data-table');
+            table.innerHTML = '';
+            entries.forEach(entry => {
+                table.innerHTML += `<tr><td>${entry.name}</td><td>${entry.studentId}</td><td>${entry.phone}</td></tr>`;
+            });
+        }
+
+        function exportToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            data.forEach(entry => {
+                const row = `${entry.name},${entry.studentId},${entry.phone}`;
+                csvContent += row + '\n';
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'data.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</head>
+<body>
+    <h1>Data Management</h1>
+    <input type="text" id="search" placeholder="Search by 姓名 or 学号" oninput="searchEntries()">
+    <table border="1" id="data-table">
+        <tr>
+            <th>姓名</th>
+            <th>学号</th>
+            <th>电话</th>
+        </tr>
+    </table>
+    <h2>Add New Entry</h2>
+    <input type="text" id="name" placeholder="姓名">
+    <input type="text" id="student-id" placeholder="学号">
+    <input type="text" id="phone" placeholder="电话">
+    <button onclick="addEntry()">Add</button>
+    <button onclick="exportToExcel()">Export to Excel</button>
+</body>
+</html>
